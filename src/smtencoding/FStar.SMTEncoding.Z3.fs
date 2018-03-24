@@ -400,11 +400,14 @@ let doZ3Exe (fresh:bool) (input:string) (label_messages:error_labels) : z3status
   in
   parse (BU.trim_string stdout)
 
-let z3_options () =
-    "(set-option :global-decls false)\n\
-     (set-option :smt.mbqi false)\n\
+let z3_options = BU.mk_ref
+    "(set-option :smt.mbqi false)\n\
      (set-option :auto_config false)\n\
      (set-option :produce-unsat-cores true)\n"
+
+// Use by F*.js
+let set_z3_options opts =
+    z3_options := opts
 
 type job<'a> = {
     job:unit -> 'a;
@@ -547,7 +550,7 @@ let refresh () =
         bg_scope := List.flatten (List.rev !fresh_scope)
 
 let mk_input theory =
-    let options = z3_options () in
+    let options = !z3_options in
     let r, hash =
         if Options.record_hints()
         || (Options.use_hints() && Options.use_hint_hashes()) then
