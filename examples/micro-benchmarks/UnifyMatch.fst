@@ -3,9 +3,9 @@ module UnifyMatch
 open FStar.Tactics
 
 type t =
-    | C : int -> int -> t
+    | C : x:int -> y:int -> t
 
-let tests : list (term * term * bool) = [
+let tests () : Tac (list (term * term * bool)) = [
   (`(fun (x:t) -> match x with | C x y when x > 0 -> y),
    `(fun (x:t) -> match x with | C y x when y > 0 -> x),
    true);
@@ -25,6 +25,10 @@ let tests : list (term * term * bool) = [
   (`(fun (x:t) -> match x with | C x y            -> y),
    `(fun (x:t) -> match x with | C y x            -> x),
    true);
+
+  (`(C?.x),
+   norm_term [delta] (`(C?.x)),
+   true)
   ]
 
 let test1 tb  : Tac unit =
@@ -34,5 +38,5 @@ let test1 tb  : Tac unit =
     else ()
 
 let _ = assert_by_tactic True
-        (fun () -> let _ = Tactics.Util.map test1 tests in
+        (fun () -> let _ = Tactics.Util.map test1 (tests ()) in
                    ())
