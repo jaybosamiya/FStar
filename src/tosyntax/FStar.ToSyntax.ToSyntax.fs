@@ -1299,7 +1299,7 @@ and desugar_term_maybe_top (top_level:bool) (env:env_t) (top:term) : S.term * an
       let e, s = desugar_term_aq env e in
       let projname = mk_field_projector_name_from_ident constrname f.ident in
       let qual = if is_rec then Some (Record_projector (constrname, f.ident)) else None in
-      mk <| Tm_app(S.fvar (Ident.set_lid_range projname (range_of_lid f)) Delta_equational qual, [as_arg e]), s
+      mk <| Tm_app(S.fvar (Ident.set_lid_range projname (range_of_lid f)) (Delta_defined_at_level 1) qual, [as_arg e]), s
 
     | NamedTyp(_, e) ->
         desugar_term_aq env e
@@ -1727,8 +1727,8 @@ let mk_indexed_projector_names iquals fvq env lid (fields:list<S.binder>) =
         else
             let dd =
                 if quals |> List.contains S.Abstract
-                then Delta_abstract Delta_equational
-                else Delta_equational
+                then Delta_abstract (Delta_defined_at_level 1)
+                else (Delta_defined_at_level 1)
             in
             let lb = {
                 lbname=Inr (S.lid_as_fv field_name dd None);
