@@ -1,4 +1,5 @@
 FROM ubuntu:xenial
+MAINTAINER MSR Everest
 
 # Add a new mirror, maybe more stable than Docker's
 RUN echo 'deb http://mirror.pnl.gov/ubuntu/ xenial main' >> /etc/apt/sources.list
