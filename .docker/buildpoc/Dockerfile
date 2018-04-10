@@ -96,7 +96,7 @@ EXPOSE 2222 80
 # Set the final directory entrypoint
 WORKDIR ${MYHOME}/everest
 
-# Provide the default command prefix when a container is created from this image, by `docker run`
+# Provide the default command prefix when a container is created from this image, by 'docker run'
 ENTRYPOINT ["/bin/bash", "--login", "-c"]
 
 # Provide the default command when a container is created from this image, by `docker attach`
