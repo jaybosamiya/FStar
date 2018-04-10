@@ -85,7 +85,7 @@ ENV EVEREST_ENV_DEST_FILE ${MYHOME}/.profile
 RUN ./everest/everest --yes check
 RUN  eval $(opam config env)
 
-#TODO BUILD FSTAR
+#BUILD FSTAR
 RUN mkdir ${MYHOME}/FStar
 COPY --chown=everest / ${MYHOME}/FStar/
 WORKDIR ${MYHOME}/FStar
