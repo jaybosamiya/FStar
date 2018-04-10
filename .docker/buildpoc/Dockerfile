@@ -86,6 +86,7 @@ RUN ./everest/everest --yes check
 RUN  eval $(opam config env)
 
 #TODO BUILD FSTAR
+
 RUN mkdir ${MYHOME}/FStar
 COPY /. ${MYHOME}/FStar
 WORKDIR ${MYHOME}/FStar
