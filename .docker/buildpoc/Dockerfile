@@ -87,7 +87,7 @@ RUN  eval $(opam config env)
 
 #TODO BUILD FSTAR
 RUN mkdir ${MYHOME}/FStar
-COPY / ${MYHOME}/FStar/
+COPY --chown=everest / ${MYHOME}/FStar/
 WORKDIR ${MYHOME}/FStar
 RUN ls -la
 RUN make -C src/ocaml-output && make -j 48 -C ulib/ml
