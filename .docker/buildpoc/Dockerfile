@@ -89,7 +89,6 @@ RUN  eval $(opam config env)
 RUN mkdir ${MYHOME}/FStar
 COPY --chown=everest / ${MYHOME}/FStar/
 WORKDIR ${MYHOME}/FStar
-RUN ls -la
 RUN make -C src/ocaml-output && make -j 48 -C ulib/ml
 
 EXPOSE 2222 80
