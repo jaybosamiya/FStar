@@ -62,6 +62,8 @@ ENV MYHOME /home/everest
 RUN useradd --shell /bin/bash --create-home --home-dir ${MYHOME} everest
 RUN echo "everest ALL=(ALL:ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+# Set everest user password
+RUN	echo 'everest:everest!' >> /root/passwdfile
 
 # --login: Ensure that the .profile is read at each subsequent RUN (to take all the settings and environment that opam will write there).
 # Other options to bash may be added here, but -c MUST BE the last one (it introduces the actual command to be RUN)
