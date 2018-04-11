@@ -144,6 +144,12 @@ let rec free_names_and_uvs' tm use_cache : free_vars_and_fvars =
           union n (union (free_names_and_uvars lb.lbtyp use_cache) (free_names_and_uvars lb.lbdef use_cache)))
           (free_names_and_uvars t use_cache)
 
+      | Tm_quoted (tm, qi) ->
+        begin match qi.qkind with
+        | Quote_static  -> no_free_vars
+        | Quote_dynamic -> free_names_and_uvars tm use_cache
+        end
+
       | Tm_meta(t, m) ->
         let u1 = free_names_and_uvars t use_cache in
         begin match m with
@@ -155,11 +161,6 @@ let rec free_names_and_uvs' tm use_cache : free_vars_and_fvars =
 
         | Meta_monadic_lift(_, _, t') ->
           union u1 (free_names_and_uvars t' use_cache)
-
-        | Meta_quoted (qt, qi) ->
-            if qi.qopen
-            then union u1 (free_names_and_uvars qt use_cache)
-            else u1
 
         | Meta_labeled _
         | Meta_desugared _
@@ -229,5 +230,6 @@ let names t = FStar.Util.as_set (fst (free_names_and_uvars t true)).free_names S
 let uvars t = FStar.Util.as_set (fst (free_names_and_uvars t true)).free_uvars compare_uv
 let univs t = FStar.Util.as_set (fst (free_names_and_uvars t true)).free_univs compare_universe_uvar
 let univnames t = FStar.Util.as_set (fst (free_names_and_uvars t true)).free_univ_names Syntax.order_univ_name
+let univnames_comp c = FStar.Util.as_set (fst (free_names_and_uvars_comp c true)).free_univ_names Syntax.order_univ_name
 let fvars t = snd (free_names_and_uvars t false)
 let names_of_binders (bs:binders) = FStar.Util.as_set ((fst (free_names_and_uvars_binders bs no_free_vars true)).free_names) Syntax.order_bv

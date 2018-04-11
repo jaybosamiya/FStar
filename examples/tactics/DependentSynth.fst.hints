@@ -1,16 +1,7 @@
 [
-  "²—S©ˆù€t‹\füR§©lÏ",
+  "›©í\\¦P°HuŽ’½!³Œ­",
   [
     [
-      "DependentSynth.myty",
-      1,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "656e21c52b8125271f8f0f73bae0ee8e"
-    ],
-    [
       "DependentSynth.f",
       1,
       2,
@@ -20,16 +11,7 @@
         "equation_DependentSynth.myty", "int_typing", "unit_typing"
       ],
       0,
-      "a4c056de45db92ee55ca4b8de92c8030"
-    ],
-    [
-      "DependentSynth.myty",
-      2,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "5c387373ece3941957ef5c7fbaac1a07"
+      "3efa3e645b46f38940b9347c9f881808"
     ],
     [
       "DependentSynth.f",
@@ -41,7 +23,7 @@
         "equation_DependentSynth.myty", "int_typing", "unit_typing"
       ],
       0,
-      "86fc5b00f6423143b879247826fa9dd7"
+      "b1508f58d55e828a7fd79ec4850d969d"
     ]
   ]
 ]

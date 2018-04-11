@@ -20,14 +20,12 @@ incl \
 struct \
 micro-benchmarks \
 tactics \
-pattern-matching \
 kv_parsing \
 lowparse \
 vale \
 seplogic \
 hello \
 native_tactics \
-native_tactics/tactics \
 extraction \
 demos
 

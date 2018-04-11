@@ -1,34 +1,17 @@
 [
-  "\u0019ÁN]_dÂæ\u0016\u007fJXÃ\u001dÙ\u0012",
+  "\u0005\u0015Æ–\u001cÏ•u6\u0016‹µ\u001b„èê",
   [
     [
-      "Synthesis.uu___45",
+      "Synthesis.uu___33",
       1,
       2,
       1,
       [ "@query", "equation_Synthesis.a" ],
       0,
-      "3495ca57bf1637756f7af1286a0d530b"
+      "4ef953cead1266eadbe078a097dd44f5"
     ],
     [
-      "Synthesis.fib",
-      1,
-      2,
-      1,
-      [
-        "@MaxIFuel_assumption", "@query",
-        "Prims_pretyping_ae567c2fb75be05905677af440075565",
-        "binder_x_6d0180d4fcd10237cf0d87dd345d77cc_0",
-        "equation_FStar.UInt32.n", "function_token_typing_FStar.UInt32.n",
-        "int_inversion", "int_typing", "primitive_Prims.op_LessThan",
-        "primitive_Prims.op_Subtraction", "projection_inverse_BoxInt_proj_0",
-        "well-founded-ordering-on-nat"
-      ],
-      0,
-      "c06169997ce857569ac230dcfbcec642"
-    ],
-    [
-      "Synthesis.uu___46",
+      "Synthesis.uu___34",
       1,
       2,
       1,
@@ -37,131 +20,49 @@
         "projection_inverse_BoxInt_proj_0"
       ],
       0,
-      "9e89624f46b8c80280437acad4ae6d27"
+      "013fb8cecc59e1b90638fe8d8011ad22"
     ],
     [
-      "Synthesis.fib_norm",
-      1,
-      2,
-      1,
-      [
-        "@MaxIFuel_assumption", "@query",
-        "Prims_pretyping_ae567c2fb75be05905677af440075565",
-        "binder_x_6d0180d4fcd10237cf0d87dd345d77cc_0",
-        "equation_FStar.UInt32.n", "function_token_typing_FStar.UInt32.n",
-        "int_inversion", "int_typing", "primitive_Prims.op_Addition",
-        "primitive_Prims.op_LessThan", "primitive_Prims.op_Subtraction",
-        "projection_inverse_BoxInt_proj_0", "well-founded-ordering-on-nat"
-      ],
-      0,
-      "2c5e80db61de3b856d128676e40c26e0"
-    ],
-    [
-      "Synthesis.uu___47",
+      "Synthesis.uu___35",
       1,
       2,
       1,
       [ "@query", "equation_Synthesis.fn8" ],
       0,
-      "64ef8656fb98737e9b001ab30280f8d5"
+      "2071539787f991a98dc8d642d2faae78"
     ],
     [
-      "Synthesis.iszero",
+      "Synthesis.uu___36",
       1,
       2,
       1,
-      [ "@query" ],
+      [ "@query", "assumption_Prims.HasEq_int", "equation_Synthesis.iszero" ],
       0,
-      "061dfe6d537d174a1816117be87c039b"
+      "a716434730e135a666216f9ecbe0e752"
     ],
     [
-      "Synthesis.uu___48",
+      "Synthesis.uu___37",
       1,
       2,
       1,
-      [ "@query", "assumption_Prims.HasEq_int" ],
+      [ "@query", "assumption_Prims.HasEq_int", "equation_Synthesis.iszero" ],
       0,
-      "ba95d28d5bbda015788c41ea4dede569"
+      "c6076b2f5aa03ebd246a4b773308a1bb"
     ],
     [
-      "Synthesis.uu___48",
-      2,
-      2,
+      "Synthesis.uu___38",
       1,
-      [ "@query", "equation_Synthesis.iszero" ],
-      0,
-      "58dd3c2a764bf2da618440e9169ffdc2"
-    ],
-    [
-      "Synthesis.uu___49",
-      1,
-      2,
-      1,
-      [ "@query", "assumption_Prims.HasEq_int" ],
-      0,
-      "fded8f0428a9c8dd9def669bdc5b8f24"
-    ],
-    [
-      "Synthesis.uu___49",
-      2,
-      2,
-      1,
-      [ "@query", "equation_Synthesis.iszero" ],
-      0,
-      "22f12d1ff12f645aa0d574ec30e76b03"
-    ],
-    [
-      "Synthesis.uu___50",
-      1,
-      2,
-      1,
-      [ "@query", "assumption_Prims.HasEq_int" ],
-      0,
-      "8c938ba4db8be8cd7f226a605aee2e03"
-    ],
-    [
-      "Synthesis.uu___50",
-      2,
       2,
       1,
       [
-        "@query", "equation_Synthesis.iszero",
+        "@query", "assumption_Prims.HasEq_int", "equation_Synthesis.iszero",
         "projection_inverse_BoxInt_proj_0"
       ],
       0,
-      "53c3f1e9e6ef306634f239943863edae"
+      "205f07672199c009d92492b468882a14"
     ],
     [
-      "Synthesis.mk_let",
-      1,
-      2,
-      1,
-      [
-        "@MaxIFuel_assumption", "@query",
-        "FStar.Reflection.Data_pretyping_ee655bc751cef679bca813f86c407d6b",
-        "FStar.Tactics.Types_pretyping_44d92714caae41c1068a904c983c4672",
-        "Prims_pretyping_f8666440faa91836cc5a13998af863fc",
-        "data_elim_FStar.Tactics.Result.Failed",
-        "data_typing_intro_FStar.Reflection.Data.Tv_Unknown@tok",
-        "data_typing_intro_FStar.Tactics.Result.Failed@tok",
-        "fuel_guarded_inversion_FStar.Pervasives.Native.tuple2",
-        "fuel_guarded_inversion_FStar.Tactics.Result.__result",
-        "function_token_typing_Prims.unit", "unit_typing"
-      ],
-      0,
-      "647366d42c33d44922181200a31b2473"
-    ],
-    [
-      "Synthesis.f2",
-      1,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "d129db3dcce085aafe6edcf81cace3a7"
-    ],
-    [
-      "Synthesis.uu___51",
+      "Synthesis.uu___39",
       1,
       2,
       1,
@@ -174,27 +75,7 @@
         "projection_inverse_BoxInt_proj_0"
       ],
       0,
-      "ff92c2f9ddb57ed0091744fff12c82c6"
-    ],
-    [
-      "Synthesis.mk_let_rec",
-      1,
-      2,
-      1,
-      [
-        "@MaxIFuel_assumption", "@query",
-        "FStar.Reflection.Data_pretyping_ee655bc751cef679bca813f86c407d6b",
-        "FStar.Tactics.Types_pretyping_44d92714caae41c1068a904c983c4672",
-        "Prims_pretyping_f8666440faa91836cc5a13998af863fc",
-        "data_elim_FStar.Tactics.Result.Failed",
-        "data_typing_intro_FStar.Reflection.Data.Tv_Unknown@tok",
-        "data_typing_intro_FStar.Tactics.Result.Failed@tok",
-        "fuel_guarded_inversion_FStar.Pervasives.Native.tuple2",
-        "fuel_guarded_inversion_FStar.Tactics.Result.__result",
-        "function_token_typing_Prims.unit", "unit_typing"
-      ],
-      0,
-      "93de5a358def157c547f09099ca08edb"
+      "07a58f89ffe7d8eba885d3ca039a8b8e"
     ],
     [
       "Synthesis.f3",
@@ -208,92 +89,16 @@
         "well-founded-ordering-on-nat"
       ],
       0,
-      "1ae9cbea1defb76b23ff938bb4f15af7"
+      "39282687a45a306ea3d7816ea5c20448"
     ],
     [
-      "Synthesis.uu___52",
+      "Synthesis.uu___40",
       1,
       2,
       1,
       [ "@query" ],
       0,
-      "60bb282728037bcdcc00337901aca394"
-    ],
-    [
-      "Synthesis.fib",
-      2,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "bb2e0069b110c4942d05d329c6f05054"
-    ],
-    [
-      "Synthesis.fib_norm",
-      2,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "58eb675a4757358525e65a26be591b1e"
-    ],
-    [
-      "Synthesis.iszero",
-      2,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "95d169521d0520e16778115c1dfeccb1"
-    ],
-    [
-      "Synthesis.mk_let",
-      2,
-      2,
-      1,
-      [
-        "@MaxIFuel_assumption", "@query",
-        "FStar.Reflection.Data_pretyping_ee655bc751cef679bca813f86c407d6b",
-        "FStar.Tactics.Types_pretyping_44d92714caae41c1068a904c983c4672",
-        "Prims_pretyping_f8666440faa91836cc5a13998af863fc",
-        "data_elim_FStar.Tactics.Result.Failed",
-        "data_typing_intro_FStar.Reflection.Data.Tv_Unknown@tok",
-        "data_typing_intro_FStar.Tactics.Result.Failed@tok",
-        "fuel_guarded_inversion_FStar.Pervasives.Native.tuple2",
-        "fuel_guarded_inversion_FStar.Tactics.Result.__result",
-        "function_token_typing_Prims.unit", "unit_typing"
-      ],
-      0,
-      "8ae57c6c4e669ecab3e8e33abb5c159a"
-    ],
-    [
-      "Synthesis.f2",
-      2,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "36f941275f9d740087f741b0f909496b"
-    ],
-    [
-      "Synthesis.mk_let_rec",
-      2,
-      2,
-      1,
-      [
-        "@MaxIFuel_assumption", "@query",
-        "FStar.Reflection.Data_pretyping_ee655bc751cef679bca813f86c407d6b",
-        "FStar.Tactics.Types_pretyping_44d92714caae41c1068a904c983c4672",
-        "Prims_pretyping_f8666440faa91836cc5a13998af863fc",
-        "data_elim_FStar.Tactics.Result.Failed",
-        "data_typing_intro_FStar.Reflection.Data.Tv_Unknown@tok",
-        "data_typing_intro_FStar.Tactics.Result.Failed@tok",
-        "fuel_guarded_inversion_FStar.Pervasives.Native.tuple2",
-        "fuel_guarded_inversion_FStar.Tactics.Result.__result",
-        "function_token_typing_Prims.unit", "unit_typing"
-      ],
-      0,
-      "b0e0af3ce602f9df52862e5cb5e777c9"
+      "65b3979f620ebe3a727439fd36e8d340"
     ],
     [
       "Synthesis.f3",
@@ -307,7 +112,7 @@
         "well-founded-ordering-on-nat"
       ],
       0,
-      "06c8f0db12daa128ffce83f2cc2c7e4d"
+      "bd43b9a8065a2ba8d4a5795ebe6acd5d"
     ]
   ]
 ]

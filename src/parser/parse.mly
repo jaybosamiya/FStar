@@ -1,6 +1,6 @@
 %{
 (*
- We are expected to have only 7 shift-reduce conflicts.
+ We are expected to have only 5 shift-reduce conflicts.
  A lot (176) of end-of-stream conflicts are also reported and
  should be investigated...
 *)
@@ -52,7 +52,7 @@ open FStar_String
 %token NOEXTRACT
 %token NOEQUALITY UNOPTEQUALITY PRAGMALIGHT PRAGMA_SET_OPTIONS PRAGMA_RESET_OPTIONS
 %token TYP_APP_LESS TYP_APP_GREATER SUBTYPE SUBKIND BY
-%token AND ASSERT BEGIN ELSE END
+%token AND ASSERT SYNTH BEGIN ELSE END
 %token EXCEPTION FALSE FUN FUNCTION IF IN MODULE DEFAULT
 %token MATCH OF
 %token OPEN REC MUTABLE THEN TRUE TRY TYPE EFFECT VAL
@@ -68,7 +68,7 @@ open FStar_String
 %token PRIVATE REIFIABLE REFLECTABLE REIFY RANGE_OF SET_RANGE_OF LBRACE_COLON_PATTERN PIPE_RIGHT
 %token NEW_EFFECT SUB_EFFECT SPLICE SQUIGGLY_RARROW TOTAL
 %token REQUIRES ENSURES
-%token MINUS COLON_EQUALS QUOTE
+%token MINUS COLON_EQUALS QUOTE BACKTICK_AT BACKTICK_HASH
 %token BACKTICK UNIV_HASH
 %token PERC_BACKTICK
 
@@ -94,7 +94,7 @@ open FStar_String
 %right    OPINFIX1
 %left     OPINFIX2 MINUS QUOTE
 %left     OPINFIX3
-%left     BACKTICK
+%left     BACKTICK BACKTICK_AT BACKTICK_HASH
 %right    OPINFIX4
 
 %start inputFragment
@@ -173,8 +173,8 @@ rawDecl:
           | bs -> mk_term (Product(bs, t)) (rhs2 parseState 3 5) Type_level
         in Val(lid, t)
       }
-  | SPLICE t=term
-      { Splice t }
+  | SPLICE LBRACK ids=separated_list(SEMICOLON, lidentOrOperator) RBRACK t=atomicTerm
+      { Splice (ids, t) }
   | EXCEPTION lid=uident t_opt=option(OF t=typ {t})
       { Exception(lid, t_opt) }
   | NEW_EFFECT ne=newEffect
@@ -474,7 +474,7 @@ tvar:
 /******************************************************************************/
 
 ascribeTyp:
-  | COLON t=tmArrow(tmNoEq) { t }
+  | COLON t=tmArrow(tmNoEq) tacopt=option(BY tactic=atomicTerm {tactic}) { t, tacopt }
 
 (* Remove for stratify *)
 ascribeKind:
@@ -552,6 +552,24 @@ noSeqTerm:
   | ASSUME e=atomicTerm
       { let a = set_lid_range assume_lid (rhs parseState 1) in
         mkExplicitApp (mk_term (Var a) (rhs parseState 1) Expr) [e] (rhs2 parseState 1 2) }
+
+  | ASSERT e=atomicTerm tactic_opt=option(BY tactic=typ {tactic})
+      {
+        match tactic_opt with
+        | None ->
+          let a = set_lid_range assert_lid (rhs parseState 1) in
+          mkExplicitApp (mk_term (Var a) (rhs parseState 1) Expr) [e] (rhs2 parseState 1 2)
+        | Some tac ->
+          let a = set_lid_range assert_by_tactic_lid (rhs parseState 1) in
+          mkExplicitApp (mk_term (Var a) (rhs parseState 1) Expr) [e; tac] (rhs2 parseState 1 4)
+      }
+
+   | SYNTH tactic=atomicTerm
+     {
+         let a = set_lid_range synth_lid (rhs parseState 1) in
+         mkExplicitApp (mk_term (Var a) (rhs parseState 1) Expr) [tactic] (rhs2 parseState 1 2)
+
+     }
 
 typ:
   | t=simpleTerm  { t }
@@ -682,9 +700,13 @@ tmEqWith(X):
   | MINUS e=tmEqWith(X)
       { mk_uminus e (rhs parseState 1) (rhs2 parseState 1 2) Expr }
   | QUOTE e=tmEqWith(X)
-      { mk_term (Quote (e, true)) (rhs2 parseState 1 3) Un }
+      { mk_term (Quote (e, Dynamic)) (rhs2 parseState 1 3) Un }
   | BACKTICK e=tmEqWith(X)
-      { mk_term (Quote (e, false)) (rhs2 parseState 1 3) Un }
+      { mk_term (Quote (e, Static)) (rhs2 parseState 1 3) Un }
+  | BACKTICK_AT e=atomicTerm
+      { mk_term (Antiquote (true, e)) (rhs2 parseState 1 3) Un }
+  | BACKTICK_HASH e=atomicTerm
+      { mk_term (Antiquote (false, e)) (rhs2 parseState 1 3) Un }
   | e=tmNoEqWith(X)
       { e }
 
@@ -795,8 +817,6 @@ atomicTermQUident:
 
 atomicTermNotQUident:
   | UNDERSCORE { mk_term Wild (rhs parseState 1) Un }
-  | ASSERT   { let a = set_lid_range assert_lid (rhs parseState 1) in
-               mk_term (Var a) (rhs parseState 1) Expr }
   | tv=tvar     { mk_term (Tvar tv) (rhs parseState 1) Type_level }
   | c=constant { mk_term (Const c) (rhs parseState 1) Expr }
   | x=opPrefixTerm(atomicTermNotQUident)
@@ -965,7 +985,7 @@ warn_error_list:
 warn_error:
   | f=flag r=range
     { [(f, r)] }
-  | f=flag r=range e=warn_error 
+  | f=flag r=range e=warn_error
     { (f, r) :: e }
 
 flag:
@@ -974,7 +994,7 @@ flag:
   | op=OPINFIX2
     { if op = "+" then CWarning else failwith (format1 "unexpected token %s in warn-error list" op)}
   | MINUS
-	  { CSilent }
+          { CSilent }
 
 range:
   | i=INT
@@ -1007,7 +1027,7 @@ range:
      { mk_ident(op, rhs parseState 1) }
   | op=OP_MIXFIX_ACCESS
      { mk_ident(op, rhs parseState 1) }
-  
+
 /* These infix operators have a lower precedence than EQUALS */
 %inline operatorInfix0ad12:
   | op=OPINFIX0a

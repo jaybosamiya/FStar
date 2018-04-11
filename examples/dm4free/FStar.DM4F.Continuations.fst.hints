@@ -2,15 +2,6 @@
   "ÿfèJ™W+t‰ÊH©uÍ-~",
   [
     [
-      "FStar.DM4F.Continuations.uu___is_L",
-      1,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "0b4ce0106a1380af7fd1ce805b2bd32b"
-    ],
-    [
       "FStar.DM4F.Continuations.__proj__L__item__a",
       1,
       2,
@@ -22,7 +13,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_8445d79c1f764e59f2958fa0cdffa351"
       ],
       0,
-      "b115359a844da424ae40340f4868bf9f"
+      "a8428c3858c283ac599bd5661dbc2f33"
     ],
     [
       "FStar.DM4F.Continuations.__proj__L__item__b",
@@ -36,7 +27,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_8445d79c1f764e59f2958fa0cdffa351"
       ],
       0,
-      "4b8141308f8e58400fb54004e483afa3"
+      "79b516b5e8a0e4e61950669c08b27bc4"
     ],
     [
       "FStar.DM4F.Continuations.__proj__L__item___2",
@@ -52,16 +43,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_8445d79c1f764e59f2958fa0cdffa351"
       ],
       0,
-      "3d500628b8f78f4af5bb0388ba3951d2"
-    ],
-    [
-      "FStar.DM4F.Continuations.uu___is_R",
-      1,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "5649e2c0aea1a97b1eca01a45c86ea10"
+      "e645c9d3a5d342cdc98b73562fddb538"
     ],
     [
       "FStar.DM4F.Continuations.__proj__R__item__a",
@@ -75,7 +57,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_a6a39bffc11b264d9749ffb3bf1e08d0"
       ],
       0,
-      "2a2df812eb599d51ef4de4c601698f60"
+      "59b8fc035cbbf7ef67ad0a6c8101d35f"
     ],
     [
       "FStar.DM4F.Continuations.__proj__R__item__b",
@@ -89,7 +71,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_a6a39bffc11b264d9749ffb3bf1e08d0"
       ],
       0,
-      "040680213f85d6efab4ac1ec55a15e21"
+      "8166e945c70c5f5bc07859a0db2f7fab"
     ],
     [
       "FStar.DM4F.Continuations.__proj__R__item___2",
@@ -105,16 +87,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_a6a39bffc11b264d9749ffb3bf1e08d0"
       ],
       0,
-      "7591756b94fc4338e865533a317b1706"
-    ],
-    [
-      "FStar.DM4F.Continuations.uu___is_L",
-      2,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "427642bda2342fa9ea9200611e175488"
+      "867bd6709fd1e757a78236ef644d1539"
     ],
     [
       "FStar.DM4F.Continuations.__proj__L__item__a",
@@ -128,7 +101,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_8445d79c1f764e59f2958fa0cdffa351"
       ],
       0,
-      "e97dc13f70ff6a7e004291299bd486e3"
+      "a90e3950a02670a5b09264d030c5460c"
     ],
     [
       "FStar.DM4F.Continuations.__proj__L__item__b",
@@ -142,7 +115,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_8445d79c1f764e59f2958fa0cdffa351"
       ],
       0,
-      "f1c919684c731edad4c9e18a29c55eda"
+      "53c75eaf2ebbfd37a2bb19e6dd4c0ad5"
     ],
     [
       "FStar.DM4F.Continuations.__proj__L__item___2",
@@ -158,16 +131,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_8445d79c1f764e59f2958fa0cdffa351"
       ],
       0,
-      "6e47d2826d6743f2fbc3e87a70f05acb"
-    ],
-    [
-      "FStar.DM4F.Continuations.uu___is_R",
-      2,
-      2,
-      1,
-      [ "@query" ],
-      0,
-      "f0215638ae3cffbed4730723e3ffdfce"
+      "94331b26b66ff1118c196bf22acbca4d"
     ],
     [
       "FStar.DM4F.Continuations.__proj__R__item__a",
@@ -181,7 +145,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_a6a39bffc11b264d9749ffb3bf1e08d0"
       ],
       0,
-      "2eaa6060b5f123e95e469a63df8165ee"
+      "b80516f95734c57f7335ca0b2f2230da"
     ],
     [
       "FStar.DM4F.Continuations.__proj__R__item__b",
@@ -195,7 +159,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_a6a39bffc11b264d9749ffb3bf1e08d0"
       ],
       0,
-      "1cd892ab139e5d4dd6b5153a4f267382"
+      "3e25fb6de902842088afb408a429884b"
     ],
     [
       "FStar.DM4F.Continuations.__proj__R__item___2",
@@ -211,7 +175,7 @@
         "refinement_interpretation_FStar.DM4F.Continuations_Tm_refine_a6a39bffc11b264d9749ffb3bf1e08d0"
       ],
       0,
-      "8536cf7ab2cf25f5240e9aa44d1f2d75"
+      "fd4aac002666027b698ab344882be87d"
     ]
   ]
 ]

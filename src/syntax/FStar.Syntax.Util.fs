@@ -104,9 +104,6 @@ open FStar.Syntax.Subst
 let rec unmeta e =
     let e = compress e in
     match e.n with
-        // Do not remove these
-        | Tm_meta(_, Meta_quoted _) -> e
-
         | Tm_meta(e, _)
         | Tm_ascribed(e, _, _) -> unmeta e
         | _ -> e
@@ -117,8 +114,7 @@ let rec unmeta_safe e =
         | Tm_meta(e', m) ->
             begin match m with
             | Meta_monadic _
-            | Meta_monadic_lift _
-            | Meta_quoted _ ->
+            | Meta_monadic_lift _ ->
               e // don't remove the metas that really matter
             | _ -> unmeta_safe e'
             end
@@ -274,8 +270,6 @@ let is_tot_or_gtot_lcomp c = lid_equals c.eff_name PC.effect_Tot_lid
                              || lid_equals c.eff_name PC.effect_GTot_lid
                              || c.cflags |> U.for_some (function TOTAL | RETURN -> true | _ -> false)
 
-let is_tac_lcomp c = lid_equals c.eff_name PC.effect_Tac_lid
-
 let is_partial_return c = comp_flags c |> U.for_some (function RETURN | PARTIAL_RETURN -> true | _ -> false)
 
 let is_lcomp_partial_return c = c.cflags |> U.for_some (function RETURN | PARTIAL_RETURN -> true | _ -> false)
@@ -283,9 +277,6 @@ let is_lcomp_partial_return c = c.cflags |> U.for_some (function RETURN | PARTIA
 let is_tot_or_gtot_comp c =
     is_total_comp c
     || lid_equals PC.effect_GTot_lid (comp_effect_name c)
-
-let is_tac_comp c =
-    lid_equals PC.effect_Tac_lid (comp_effect_name c)
 
 let is_pure_effect l =
      lid_equals l PC.effect_Tot_lid
@@ -425,7 +416,7 @@ let rec ascribe t k = match t.n with
   | Tm_ascribed (t', _, _) -> ascribe t' k
   | _ -> mk (Tm_ascribed(t, k, None)) None t.pos
 
-let unfold_lazy i = must !lazy_chooser i.kind i
+let unfold_lazy i = must !lazy_chooser i.lkind i
 
 let rec unlazy t =
     match (compress t).n with
@@ -435,10 +426,10 @@ let rec unlazy t =
 let mk_lazy (t : 'a) (typ : typ) (k : lazy_kind) (r : option<range>) : term =
     let rng = (match r with | Some r -> r | None -> dummyRange) in
     let i = {
-        kind = k;
-        blob = mkdyn t;
-        typ = typ;
-        rng = rng;
+        lkind = k;
+        blob  = mkdyn t;
+        typ   = typ;
+        rng   = rng;
       } in
     mk (Tm_lazy i) None rng
 
@@ -499,11 +490,6 @@ let rec eq_tm (t1:term) (t2:term) : eq_result =
       | Unknown, _
       | _, Unknown -> Unknown
     in
-    let notq t =
-        match t.n with
-        | Tm_meta (_, Meta_quoted _) -> false
-        | _ -> true
-    in
     let equal_data f1 args1 f2 args2 =
         // we got constructors! we know they are injective and disjoint, so we can do some
         // good analysis on them
@@ -515,7 +501,7 @@ let rec eq_tm (t1:term) (t2:term) : eq_result =
                                 eq_inj acc (eq_tm a1 a2)) Equal <| List.zip args1 args2
         ) else NotEqual
     in
-    match (compress t1).n, (compress t2).n with
+    match (unmeta t1).n, (unmeta t2).n with
     // We sometimes compare open terms, as we get alpha-equivalence
     // for free.
     | Tm_bvar bv1, Tm_bvar bv2 ->
@@ -568,14 +554,10 @@ let rec eq_tm (t1:term) (t2:term) : eq_result =
     | Tm_type u, Tm_type v ->
       equal_if (eq_univs u v)
 
-    | Tm_meta(t1', _), _ when notq t1 ->
-      eq_tm t1' t2
-
-    | _, Tm_meta(t2', _) when notq t2 ->
-      eq_tm t1 t2'
-
-    | Tm_meta (_, Meta_quoted (t1, _)), Tm_meta (_, Meta_quoted (t2, _)) ->
-      eq_tm t1 t2
+    | Tm_quoted (t1, q1), Tm_quoted (t2, q2) ->
+      if q1 = q2
+      then eq_tm t1 t2
+      else Unknown
 
     | _ -> Unknown
 
@@ -669,6 +651,7 @@ let destruct typ lid =
 
 let lids_of_sigelt (se: sigelt) = match se.sigel with
   | Sig_let(_, lids)
+  | Sig_splice(lids, _)
   | Sig_bundle(_, lids) -> lids
   | Sig_inductive_typ (lid, _,  _, _, _, _)
   | Sig_effect_abbrev(lid, _, _,  _, _)
@@ -679,8 +662,7 @@ let lids_of_sigelt (se: sigelt) = match se.sigel with
   | Sig_new_effect(n) -> [n.mname]
   | Sig_sub_effect _
   | Sig_pragma _
-  | Sig_main _
-  | Sig_splice _ -> []
+  | Sig_main _ -> []
 
 let lid_of_sigelt se : option<lident> = match lids_of_sigelt se with
   | [l] -> Some l
@@ -700,8 +682,11 @@ let range_of_args args r =
    args |> List.fold_left (fun r a -> Range.union_ranges r (range_of_arg a)) r
 
 let mk_app f args =
-  let r = range_of_args args f.pos in
-  mk (Tm_app(f, args)) None r
+  match args with
+  | [] -> f
+  | _ ->
+      let r = range_of_args args f.pos in
+      mk (Tm_app(f, args)) None r
 
 let mk_data l args =
   match args with
@@ -770,6 +755,16 @@ let mk_field_projector_name lid (x:bv) i =
              else x.ppname in
     let y = {x with ppname=nm} in
     mk_field_projector_name_from_ident lid nm, y
+
+let ses_of_sigbundle (se:sigelt) :list<sigelt> =
+  match se.sigel with
+  | Sig_bundle (ses, _) -> ses
+  | _                   -> failwith "ses_of_sigbundle: not a Sig_bundle"
+
+let eff_decl_of_new_effect (se:sigelt) :eff_decl =
+  match se.sigel with
+  | Sig_new_effect ne -> ne
+  | _                 -> failwith "eff_decl_of_new_effect: not a Sig_new_effect"
 
 let set_uvar uv t =
   match Unionfind.find uv with
@@ -1339,7 +1334,7 @@ let destruct_typ_as_formula f : option<connective> =
             if not (is_tot_or_gtot_comp c)
             then None
             else
-                let q = (comp_to_comp_typ c).result_typ in
+                let q = (comp_to_comp_typ_nouniv c).result_typ in
                 if is_free_in (fst b) q
                 then (
                     let pats, q = patterns q in
@@ -1440,6 +1435,7 @@ let rec delta_qualifier t =
         | Tm_uvar _
         | Tm_unknown -> Delta_equational
         | Tm_type _
+        | Tm_quoted _
         | Tm_constant _
         | Tm_arrow _ -> Delta_constant
         | Tm_uinst(t, _)
@@ -1588,6 +1584,10 @@ let rec term_eq_dbg (dbg : bool) t1 t2 =
      * they are indeed the same uvar *)
     check "uvar" (u1 = u2)
 
+  | Tm_quoted (qt1, qi1), Tm_quoted (qt2, qi2) ->
+    (check "tm_quoted qi"      (qi1 = qi2)) &&
+    (check "tm_quoted payload" (term_eq_dbg dbg qt1 qt2))
+
   | Tm_meta (t1, m1), Tm_meta (t2, m2) ->
     begin match m1, m2 with
     | Meta_monadic (n1, ty1), Meta_monadic (n2, ty2) ->
@@ -1598,10 +1598,6 @@ let rec term_eq_dbg (dbg : bool) t1 t2 =
         (check "meta_monadic_lift src"   (lid_equals s1 s2)) &&
         (check "meta_monadic_lift tgt"   (lid_equals t1 t2)) &&
         (check "meta_monadic_lift type"  (term_eq_dbg dbg ty1 ty2))
-
-    | Meta_quoted (qt1, qi1), Meta_quoted (qt2, qi2) ->
-        (check "meta_quoted dyn"  (qi1 = qi2)) &&
-        (check "meta_quoted payload"  (term_eq_dbg dbg qt1 qt2))
 
     | _ -> fail "metas"
     end
@@ -1678,21 +1674,6 @@ let term_eq t1 t2 =
     debug_term_eq := false;
     r
 
-let rec bottom_fold (f : term -> term) (t : term) : term =
-    let ff = bottom_fold f in
-    let tn = (compress t).n in
-    let tn = match tn with
-             | Tm_app (f, args) -> Tm_app (ff f, List.map (fun (a,q) -> (ff a, q)) args)
-             // TODO: We ignore the types. Bug or feature?
-             | Tm_abs (bs, t, k) -> let bs, t' = open_term bs t in
-                                    let t'' = ff t' in
-                                    Tm_abs (bs, close bs t'', k)
-             | Tm_arrow (bs, k) -> tn //TODO
-             | Tm_uinst (t, us) ->
-                Tm_uinst (ff t, us)
-             | _ -> tn in
-    f ({ t with n = tn })
-
 // An estimation of the size of a term, only for debugging
 let rec sizeof (t:term) : int =
     match t.n with
@@ -1745,3 +1726,110 @@ let process_pragma p r =
       match sopt with
       | None -> ()
       | Some s -> set_options Options.Reset s
+
+///////////////////////////////////////////////////////////////////////////////////////////////
+let rec unbound_variables tm :  list<bv> =
+    let t = Subst.compress tm in
+    match t.n with
+      | Tm_delayed _ -> failwith "Impossible"
+
+      | Tm_name x ->
+        []
+
+      | Tm_uvar (x, t) ->
+        []
+
+      | Tm_type u ->
+        []
+
+      | Tm_bvar x ->
+        [x]
+
+      | Tm_fvar _
+      | Tm_constant _
+      | Tm_lazy _
+      | Tm_unknown ->
+        []
+
+      | Tm_uinst(t, us) ->
+        unbound_variables t
+
+      | Tm_abs(bs, t, _) ->
+        let bs, t = Subst.open_term bs t in
+        List.collect (fun (b, _) -> unbound_variables b.sort) bs
+        @ unbound_variables t
+
+      | Tm_arrow (bs, c) ->
+        let bs, c = Subst.open_comp bs c in
+        List.collect (fun (b, _) -> unbound_variables b.sort) bs
+        @ unbound_variables_comp c
+
+      | Tm_refine(b, t) ->
+        let bs, t = Subst.open_term [b, None] t in
+        List.collect (fun (b, _) -> unbound_variables b.sort) bs
+        @ unbound_variables t
+
+      | Tm_app(t, args) ->
+        List.collect (fun (x, _) -> unbound_variables x) args
+        @ unbound_variables t
+
+      | Tm_match(t, pats) ->
+        unbound_variables t
+        @ (pats |> List.collect (fun br ->
+                 let p, wopt, t = Subst.open_branch br in
+                 unbound_variables t
+                 @ (match wopt with None -> [] | Some t -> unbound_variables t)))
+
+      | Tm_ascribed(t1, asc, _) ->
+        unbound_variables t1
+        @ (match fst asc with
+           | Inl t2 -> unbound_variables t2
+           | Inr c2 -> unbound_variables_comp c2)
+        @ (match snd asc with
+           | None -> []
+           | Some tac -> unbound_variables tac)
+
+      | Tm_let ((false, [lb]), t) ->
+        unbound_variables lb.lbtyp
+        @ unbound_variables lb.lbdef
+        @ (match lb.lbname with
+           | Inr _ -> unbound_variables t
+           | Inl bv -> let _, t= Subst.open_term [bv, None] t in
+                       unbound_variables t)
+
+      | Tm_let ((_, lbs), t) ->
+        let lbs, t = Subst.open_let_rec lbs t in
+        unbound_variables t
+        @ List.collect (fun lb -> unbound_variables lb.lbtyp @ unbound_variables lb.lbdef) lbs
+
+      | Tm_quoted (tm, qi) ->
+        begin match qi.qkind with
+        | Quote_static  -> []
+        | Quote_dynamic -> unbound_variables tm
+        end
+
+      | Tm_meta(t, m) ->
+        unbound_variables t
+        @ (match m with
+           | Meta_pattern args ->
+             List.collect (List.collect (fun (a, _) -> unbound_variables a)) args
+
+           | Meta_monadic_lift(_, _, t')
+           | Meta_monadic(_, t') ->
+             unbound_variables t'
+
+           | Meta_labeled _
+           | Meta_desugared _
+           | Meta_named _ -> [])
+
+
+and unbound_variables_comp c =
+    match c.n with
+    | GTotal (t, _)
+    | Total (t, _) ->
+      unbound_variables t
+
+    | Comp ct ->
+      unbound_variables ct.result_typ
+      @ List.collect (fun (a, _) -> unbound_variables a) ct.effect_args
+

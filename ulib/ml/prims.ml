@@ -80,6 +80,24 @@ type (' p, ' q, 'dummyP, 'dummyQ) eq3 =  unit
 
 type prop     = Obj.t
 
+type lex_t =
+  | LexTop
+  | LexCons of unit * Obj.t * lex_t
+let (uu___is_LexTop : lex_t -> bool) =
+  fun projectee  ->
+    match projectee with | LexTop  -> true | uu____18 -> false
+
+let (uu___is_LexCons : lex_t -> bool) =
+  fun projectee  ->
+    match projectee with | LexCons (a,_1,_2) -> true | uu____30 -> false
+
+type 'Aprojectee __proj__LexCons__item__a = Obj.t
+let (__proj__LexCons__item___1 :
+  lex_t -> unit __proj__LexCons__item__a) =
+  fun projectee  -> match projectee with | LexCons (a,_1,_2) -> _1
+let (__proj__LexCons__item___2 : lex_t -> lex_t) =
+  fun projectee  -> match projectee with | LexCons (a,_1,_2) -> _2
+
 let cut = ()
 let admit () = failwith "no admits"
 let _assume () = ()
@@ -136,25 +154,4 @@ let __proj__Cons__item__tl = List.tl
 
 let min = min
 
-type norm_step =
-    | Simpl
-    | Weak
-    | HNF
-    | Primops
-    | Delta
-    | Zeta
-    | Iota
-    | UnfoldOnly : string list -> norm_step
-
-let simplify : norm_step = Simpl
-let weak    : norm_step = Weak
-let hnf     : norm_step = HNF
-let primops : norm_step = Primops
-let delta   : norm_step = Delta
-let zeta    : norm_step = Zeta
-let iota    : norm_step = Iota
-let delta_only (s:string list) : norm_step = UnfoldOnly s
-
 type ('a, 'b) admit = unit
-
-let singleton x = x

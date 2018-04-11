@@ -148,7 +148,6 @@ let arith_to_bv_tac () : Tac unit = focus (fun () ->
     let f = term_as_formula g in
     match f with
     | Comp (Eq _) l r ->
-     admit (); // coverage...
      begin match run_tm (as_arith_expr l) with
       | Inl s ->
           dump s;
@@ -175,7 +174,7 @@ let bv_tac () = focus (fun () ->
 )
 
 let bv_tac_lt n = focus (fun () ->
-  let nn = pack (Tv_Const (C_Int n)) in
+  let nn = pack_ln (Tv_Const (C_Int n)) in
   let t = mk_app (`trans_lt2) [(nn, Q_Implicit)] in
   apply_lemma t;
   arith_to_bv_tac ();

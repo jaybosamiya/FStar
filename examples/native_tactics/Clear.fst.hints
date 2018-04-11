@@ -1,0 +1,50 @@
+[
+  "Çc!ë-Ü´\tèVîô≈8«ﬁ",
+  [
+    [
+      "Clear.l2",
+      1,
+      2,
+      1,
+      [
+        "@MaxIFuel_assumption", "@query",
+        "FStar.Reflection.Types_pretyping_b57262eead998d474939c05a17e1ffab",
+        "Prims_pretyping_f8666440faa91836cc5a13998af863fc",
+        "assumption_Prims.HasEq_int",
+        "data_elim_FStar.Tactics.Result.Success",
+        "fuel_guarded_inversion_FStar.Tactics.Result.__result", "unit_typing"
+      ],
+      0,
+      "a3d5439cbdb62416f29fdd6c2860610b"
+    ],
+    [
+      "Clear.l2",
+      2,
+      2,
+      1,
+      [
+        "@MaxIFuel_assumption", "@query",
+        "FStar.Reflection.Types_pretyping_b57262eead998d474939c05a17e1ffab",
+        "Prims_pretyping_f8666440faa91836cc5a13998af863fc",
+        "assumption_Prims.HasEq_int",
+        "data_elim_FStar.Tactics.Result.Success",
+        "fuel_guarded_inversion_FStar.Tactics.Result.__result", "unit_typing"
+      ],
+      0,
+      "aa32f35649511791b1141189cf696f32"
+    ],
+    [
+      "Clear.l2",
+      3,
+      2,
+      1,
+      [
+        "@MaxIFuel_assumption", "@query", "equation_Prims.squash",
+        "function_token_typing_Clear.p",
+        "refinement_interpretation_Prims_Tm_refine_8d65e998a07dd53ec478e27017d9dba5"
+      ],
+      0,
+      "a41d9df4a35246d4ce94e37d14490cc8"
+    ]
+  ]
+]

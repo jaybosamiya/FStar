@@ -11,7 +11,7 @@
         "refinement_interpretation_Prims_Tm_refine_8d65e998a07dd53ec478e27017d9dba5"
       ],
       0,
-      "0cf14b4aa742db0fe273cda02773aeab"
+      "48378e6a9fdd8633254764f8044ce941"
     ],
     [
       "FStar.Classical.get_squashed",
@@ -20,7 +20,7 @@
       1,
       [ "@query" ],
       0,
-      "a31f58523d881a49163585b1b2d22a94"
+      "7694391be3ee743a9ba381536f4b0241"
     ],
     [
       "FStar.Classical.get_equality",
@@ -29,7 +29,7 @@
       1,
       [ "@query", "equation_Prims.eq2" ],
       0,
-      "1496d6ece481e78080de4b521b816be1"
+      "e4eeadfb9afebdb7d262bea73a486438"
     ],
     [
       "FStar.Classical.get_forall",
@@ -38,7 +38,7 @@
       1,
       [ "@query", "equation_Prims.l_Forall" ],
       0,
-      "7bc39eb6097b671b2c801868e72a40e9"
+      "3998cdedb3f02d962370a77842090893"
     ],
     [
       "FStar.Classical.forall_intro_gtot",
@@ -47,20 +47,7 @@
       1,
       [ "@query" ],
       0,
-      "1f1c2ea452c3462fc388853b5c468f77"
-    ],
-    [
-      "FStar.Classical.lemma_forall_intro_gtot",
-      1,
-      2,
-      1,
-      [
-        "@MaxIFuel_assumption", "@query", "equation_Prims.l_Forall",
-        "equation_Prims.squash", "forall-interp",
-        "refinement_interpretation_Prims_Tm_refine_8d65e998a07dd53ec478e27017d9dba5"
-      ],
-      0,
-      "864a852509a6f8cd55d26ba22abbf14f"
+      "2cd6ec0323b2f3d453d8bd5894678150"
     ],
     [
       "FStar.Classical.gtot_to_lemma",
@@ -69,20 +56,7 @@
       1,
       [ "@query" ],
       0,
-      "44077818e4a9553b72e68b32b1f8d2e7"
-    ],
-    [
-      "FStar.Classical.forall_intro",
-      1,
-      2,
-      1,
-      [
-        "@MaxIFuel_assumption", "@query", "equation_Prims.l_Forall",
-        "equation_Prims.squash", "forall-interp",
-        "refinement_interpretation_Prims_Tm_refine_8d65e998a07dd53ec478e27017d9dba5"
-      ],
-      0,
-      "60090d0fbc8ff2e3976e119f8fc70298"
+      "c5f1f7052266157e4543f549ba1893f1"
     ],
     [
       "FStar.Classical.exists_intro",
@@ -91,7 +65,7 @@
       1,
       [ "@query", "unit_typing" ],
       0,
-      "030ba54a90d4c51d4f760a88416cf1b9"
+      "fccb1eac918cb672b0ec93f051b9a763"
     ],
     [
       "FStar.Classical.forall_to_exists",
@@ -100,7 +74,7 @@
       1,
       [ "@query" ],
       0,
-      "7147edd323e1b6bbeb0b045352be351a"
+      "18e0c447a2eff0e5126e587ad1a84916"
     ],
     [
       "FStar.Classical.forall_to_exists_2",
@@ -109,7 +83,7 @@
       1,
       [ "@query" ],
       0,
-      "8ef9cf4dca0d15e60f823142f23e9601"
+      "c6bbdc12e5602faa290e37c726220f88"
     ],
     [
       "FStar.Classical.impl_intro",
@@ -118,7 +92,7 @@
       1,
       [ "@query" ],
       0,
-      "8763aa259cbea14c09aa8aad9f12f061"
+      "ff7bf10fe65b55c480eaa7a4a85055b7"
     ],
     [
       "FStar.Classical.exists_elim",
@@ -133,7 +107,7 @@
         "unit_typing"
       ],
       0,
-      "1e6647e73b246794900db255ce6bb423"
+      "44ae31c09385fc1294b0bfc3fb3b4cd4"
     ],
     [
       "FStar.Classical.move_requires",
@@ -146,7 +120,7 @@
         "fuel_guarded_inversion_Prims.c_or"
       ],
       0,
-      "76681b6707493c9ff06b345dae99ea38"
+      "e012a491f190089dfdd45ab00ecbccad"
     ],
     [
       "FStar.Classical.forall_impl_intro",
@@ -155,7 +129,7 @@
       1,
       [ "@query" ],
       0,
-      "a092b2209e0bc5157c6621d8464eda16"
+      "cccbfac75b8fa7c833763b2e15cb759d"
     ],
     [
       "FStar.Classical.impl_intro_gen",
@@ -167,7 +141,7 @@
         "refinement_interpretation_Prims_Tm_refine_8d65e998a07dd53ec478e27017d9dba5"
       ],
       0,
-      "826e033c8463de09e038b3ff5c3bd316"
+      "43d9ee9095ce44f0873a8d9ff0486f1d"
     ],
     [
       "FStar.Classical.impl_intro_gen",
@@ -182,7 +156,7 @@
         "unit_typing"
       ],
       0,
-      "fb07ce9d1907c546555ec238d8dd0258"
+      "369f56e9321d31c477fd19f6a7101c8d"
     ],
     [
       "FStar.Classical.ghost_lemma",
@@ -195,7 +169,7 @@
         "fuel_guarded_inversion_Prims.c_or", "unit_inversion"
       ],
       0,
-      "94a6cf9aae8a92bcef91ed7b3897b95b"
+      "b56cab1d047f52fe7be6fe00483bff0a"
     ],
     [
       "FStar.Classical.or_elim",
@@ -210,7 +184,7 @@
         "unit_typing"
       ],
       0,
-      "667659ef3b25cbec43657b87a78b51c3"
+      "860836daaf62ff85d5e92be60b710e78"
     ],
     [
       "FStar.Classical.excluded_middle",
@@ -219,7 +193,7 @@
       1,
       [ "@query", "unit_typing" ],
       0,
-      "aaef6326b798f0ea64ea118360650a9e"
+      "44be59b94908d7b24257f5aa5a0ba768"
     ],
     [
       "FStar.Classical.get_squashed",
@@ -228,7 +202,7 @@
       1,
       [ "@query" ],
       0,
-      "fcb9088cdf5a3f06158a4f0b7c5e638a"
+      "d5ece58643d52f483d1f135f1361de3c"
     ],
     [
       "FStar.Classical.get_equality",
@@ -237,7 +211,7 @@
       1,
       [ "@query", "equation_Prims.eq2" ],
       0,
-      "78c38de21a941c5bf9cbab73271318ba"
+      "5bc138d7a51534371cae4c738b903a81"
     ],
     [
       "FStar.Classical.get_forall",
@@ -246,7 +220,7 @@
       1,
       [ "@query", "equation_Prims.l_Forall" ],
       0,
-      "db3318c74ca33b9a46f9ae3350e0a16c"
+      "d7ed8fc4c1fd3668a503c319b019ba00"
     ],
     [
       "FStar.Classical.forall_intro_gtot",
@@ -255,7 +229,7 @@
       1,
       [ "@query" ],
       0,
-      "cb347c9332259d8960b6f9334f81d44d"
+      "de036d5e499da3be25462a73616da527"
     ],
     [
       "FStar.Classical.impl_intro_gen",
@@ -267,7 +241,7 @@
         "refinement_interpretation_Prims_Tm_refine_8d65e998a07dd53ec478e27017d9dba5"
       ],
       0,
-      "99ca8bd6b9fbe9fcb37cd23a10679111"
+      "105c10f1b00fb924599909dcb9754522"
     ],
     [
       "FStar.Classical.or_elim",
@@ -282,7 +256,7 @@
         "unit_typing"
       ],
       0,
-      "287986559d065879cd4a34cfed133e68"
+      "c73663f5d4ed95f755594e4880699fd6"
     ]
   ]
 ]

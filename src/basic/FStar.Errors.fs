@@ -302,6 +302,12 @@ type raw_error =
   | Warning_NilGivenExplicitArgs
   | Warning_ConsAppliedExplicitArgs
   | Warning_UnembedBinderKnot
+  | Fatal_TacticProofRelevantGoal
+  | Warning_TacAdmit
+  | Fatal_IncoherentPatterns
+  | Error_NoSMTButNeeded
+  | Fatal_UnexpectedAntiquotation
+  | Fatal_SplicedUndef
 
 // Needs review: Do we need CFatal, or can we just use CError?
 type flag =
@@ -606,6 +612,12 @@ let default_flags =
   (Warning_NilGivenExplicitArgs                      , CWarning);
   (Warning_ConsAppliedExplicitArgs                   , CWarning);
   (Warning_UnembedBinderKnot                         , CWarning);
+  (Fatal_TacticProofRelevantGoal                     , CFatal);
+  (Warning_TacAdmit                                  , CWarning);
+  (Fatal_IncoherentPatterns                          , CFatal);
+  (Error_NoSMTButNeeded                              , CError);
+  (Fatal_UnexpectedAntiquotation                     , CFatal);
+  (Fatal_SplicedUndef                                , CFatal);
   ]
 
 exception Err of raw_error* string

@@ -55,6 +55,8 @@ type bv_view = {
     bv_sort : typ;
 }
 
+type binder_view = bv * aqualv
+
 type comp_view =
     | C_Total of typ * option<term> //optional decreases clause
     | C_Lemma of term * term
@@ -66,6 +68,13 @@ type sigelt_view =
     | Sg_Constructor of name * typ
     | Unk
 
+type var = Z.t
+
+type exp =
+    | Unit
+    | Var of var
+    | Mult of exp * exp
+
 (* Contains all lids and terms needed for embedding/unembedding *)
 
 type refl_constant = {
@@ -73,6 +82,8 @@ type refl_constant = {
     t : term;
 }
 
+let refl_constant_lid rc = rc.lid
+let refl_constant_term rc = rc.t
 let fstar_refl_lid s = Ident.lid_of_path (["FStar"; "Reflection"]@s) Range.dummyRange
 
 let fstar_refl_basic_lid  s = fstar_refl_lid ["Basic";  s]
@@ -95,7 +106,7 @@ let mk_inspect_pack_pair s =
     let pack        = { lid = pack_lid    ; t = fvar pack_lid (Delta_defined_at_level 1) None } in
     (inspect, pack)
 
-let fstar_refl_inspect        , fstar_refl_pack        = mk_inspect_pack_pair ""
+let fstar_refl_inspect_ln     , fstar_refl_pack_ln     = mk_inspect_pack_pair "_ln"
 let fstar_refl_inspect_fv     , fstar_refl_pack_fv     = mk_inspect_pack_pair "_fv"
 let fstar_refl_inspect_bv     , fstar_refl_pack_bv     = mk_inspect_pack_pair "_bv"
 let fstar_refl_inspect_binder , fstar_refl_pack_binder = mk_inspect_pack_pair "_binder"
@@ -103,21 +114,24 @@ let fstar_refl_inspect_comp   , fstar_refl_pack_comp   = mk_inspect_pack_pair "_
 let fstar_refl_inspect_sigelt , fstar_refl_pack_sigelt = mk_inspect_pack_pair "_sigelt"
 
 (* assumed types *)
-let fstar_refl_env       = mk_refl_types_lid_as_term "env"
-let fstar_refl_bv        = mk_refl_types_lid_as_term "bv"
-let fstar_refl_fv        = mk_refl_types_lid_as_term "fv"
-let fstar_refl_comp      = mk_refl_types_lid_as_term "comp"
-let fstar_refl_binder    = mk_refl_types_lid_as_term "binder"
-let fstar_refl_sigelt    = mk_refl_types_lid_as_term "sigelt"
-let fstar_refl_term      = mk_refl_types_lid_as_term "term"
+let fstar_refl_env              = mk_refl_types_lid_as_term "env"
+let fstar_refl_bv               = mk_refl_types_lid_as_term "bv"
+let fstar_refl_fv               = mk_refl_types_lid_as_term "fv"
+let fstar_refl_comp             = mk_refl_types_lid_as_term "comp"
+let fstar_refl_binder           = mk_refl_types_lid_as_term "binder"
+let fstar_refl_sigelt           = mk_refl_types_lid_as_term "sigelt"
+let fstar_refl_term             = mk_refl_types_lid_as_term "term"
 
 (* auxiliary types *)
-let fstar_refl_aqualv    = mk_refl_data_lid_as_term "aqualv"
-let fstar_refl_comp_view = mk_refl_data_lid_as_term "comp_view"
-let fstar_refl_term_view = mk_refl_data_lid_as_term "term_view"
-let fstar_refl_pattern   = mk_refl_data_lid_as_term "pattern"
-let fstar_refl_branch    = mk_refl_data_lid_as_term "branch"
-let fstar_refl_bv_view   = mk_refl_data_lid_as_term "bv_view"
+let fstar_refl_aqualv           = mk_refl_data_lid_as_term "aqualv"
+let fstar_refl_comp_view        = mk_refl_data_lid_as_term "comp_view"
+let fstar_refl_term_view        = mk_refl_data_lid_as_term "term_view"
+let fstar_refl_pattern          = mk_refl_data_lid_as_term "pattern"
+let fstar_refl_branch           = mk_refl_data_lid_as_term "branch"
+let fstar_refl_bv_view          = mk_refl_data_lid_as_term "bv_view"
+let fstar_refl_vconst           = mk_refl_data_lid_as_term "vconst"
+let fstar_refl_sigelt_view      = mk_refl_data_lid_as_term "sigelt_view"
+let fstar_refl_exp              = mk_refl_data_lid_as_term "exp"
 
 (* bv_view, this is a record constructor *)
 
@@ -174,6 +188,12 @@ let ref_Sg_Let         = fstar_refl_data_const "Sg_Let"
 let ref_Sg_Inductive   = fstar_refl_data_const "Sg_Inductive"
 let ref_Sg_Constructor = fstar_refl_data_const "Sg_Constructor"
 let ref_Unk            = fstar_refl_data_const "Unk"
+
+(* exp *)
+let ref_E_Unit = fstar_refl_data_const "Unit"
+let ref_E_Var = fstar_refl_data_const "Var"
+let ref_E_Mult = fstar_refl_data_const "Mult"
+let t_exp = tconst (Ident.lid_of_path ["FStar"; "Reflection"; "Data"; "exp"] Range.dummyRange)
 
 (* Should not be here *)
 let ord_Lt_lid = Ident.lid_of_path (["FStar"; "Order"; "Lt"]) Range.dummyRange

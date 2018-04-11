@@ -11,7 +11,7 @@
         "refinement_interpretation_LemmaArgs_Tm_refine_f0496eb03f3fb51b5e4ca0d53ea58c01"
       ],
       0,
-      "938311340ce93ecd8a7a1da33bc654d1"
+      "ada89558dec1ed5db16964a1e942a711"
     ],
     [
       "LemmaArgs.example1",
@@ -30,7 +30,16 @@
         "function_token_typing_Prims.unit", "unit_typing"
       ],
       0,
-      "be0ed082aa9d3b00509301fe446535a8"
+      "1c95aa4e207488b1f05523d255e21267"
+    ],
+    [
+      "LemmaArgs.lemma_example1",
+      2,
+      2,
+      1,
+      [ "@query", "assumption_Prims.HasEq_int" ],
+      0,
+      "2a3d430587a42060fe26d832c0657847"
     ]
   ]
 ]

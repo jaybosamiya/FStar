@@ -103,6 +103,7 @@ type codegen_t =
 val codegen                     : unit    -> option<codegen_t>
 val codegen_libs                : unit    -> list<list<string>>
 val debug_any                   : unit    -> bool
+val debug_module                : string  -> bool
 val debug_at_level              : string  -> debug_level_t -> bool
 val defensive                   : unit    -> bool // true if "warn" or "fail"
 val defensive_fail              : unit    -> bool // true if "fail"
@@ -144,6 +145,7 @@ val n_cores                     : unit    -> int
 val no_default_includes         : unit    -> bool
 val no_extract                  : string  -> bool
 val no_location_info            : unit    -> bool
+val no_smt                      : unit    -> bool
 val normalize_pure_terms_for_extraction
                                 : unit    -> bool
 val output_dir                  : unit    -> option<string>

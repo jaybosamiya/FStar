@@ -102,7 +102,6 @@ let rec canon_point (e:expr) : Dv expr =
 (* This is trying to emulate `pointwise canon_point` *)
 let rec canon_expr (e:expr) : Dv expr =
   match e with
-  | Atom _ _ | Lit _ -> e
   | Plus l r -> canon_point (Plus (canon_expr l) (canon_expr r))
   | Minus l r -> canon_point (Minus (canon_expr l) (canon_expr r))
   | Mult l r -> canon_point (Mult (canon_expr l) (canon_expr r))
@@ -118,15 +117,18 @@ let rec canon_expr (e:expr) : Dv expr =
   | Udiv l r -> canon_point (Udiv (canon_expr l) (canon_expr r))
   | Umod l r -> canon_point (Umod (canon_expr l) (canon_expr r))
   | MulMod l r -> canon_point (MulMod (canon_expr l) (canon_expr r))
+  // GM: Using this instead of the wildcard gives rise to a query
+  (* | Atom _ _ | Lit _ -> e *)
+  | _ -> e
 
 (* TODO: stop gap until we have lift from DIV to TAC;
          actually until we can prove canon_expr in Tot, huh?
          (see cannon_correct below) *)
 let canon_expr' (e:expr) : Tot expr = e
 
-let pack_fv' (n:name) : term = pack (Tv_FVar (pack_fv n))
+let pack_fv' (n:name) : Tac term = pack (Tv_FVar (pack_fv n))
 
-let rec expr_to_term (e:expr) : Tot term =
+let rec expr_to_term (e:expr) : Tac term =
   match e with
   | Atom i t -> t
   | Lit i -> pack (Tv_Const (C_Int i))
@@ -151,10 +153,10 @@ let rec expr_to_term (e:expr) : Tot term =
   | MulMod l r -> mk_e_app (pack_fv' shiftr_qn) [expr_to_term l; expr_to_term r]
 
 let canon_correct (e:expr) :
-  Lemma (expr_to_term e == expr_to_term (canon_expr' e)) = () // cheating
+  Lemma (expr_to_term e == expr_to_term (canon_expr' e)) = () // doesn't work
 
+// GM: This one gives rise to a seemingly very easy query, but which fails
 let term_to_expr (t:term) : Tac expr =
-  admit(); (* TODO: patterns are incomplete nonsense *)
   match run_tm (is_arith_expr t) with
   | Inr e -> e
   | Inl _ -> fail "Term is not an arithmetic expression"

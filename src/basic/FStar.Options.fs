@@ -156,6 +156,7 @@ let defaults =
       ("no_default_includes"          , Bool false);
       ("no_extract"                   , List []);
       ("no_location_info"             , Bool false);
+      ("no_smt"                       , Bool false);
       ("no_tactics"                   , Bool false);
       ("normalize_pure_terms_for_extraction"
                                       , Bool false);
@@ -203,7 +204,7 @@ let defaults =
       ("__no_positivity"              , Bool false);
       ("__ml_no_eta_expand_coertions" , Bool false);
       ("warn_error"                   , String "");
-      ("use_extracted_interfaces"     , Bool false);]
+      ("use_extracted_interfaces"     , Bool false)]
 
 let init () =
    let o = peek () in
@@ -268,6 +269,7 @@ let get_n_cores                 ()      = lookup_opt "n_cores"                  
 let get_no_default_includes     ()      = lookup_opt "no_default_includes"      as_bool
 let get_no_extract              ()      = lookup_opt "no_extract"               (as_list as_string)
 let get_no_location_info        ()      = lookup_opt "no_location_info"         as_bool
+let get_no_smt                  ()      = lookup_opt "no_smt"                   as_bool
 let get_normalize_pure_terms_for_extraction
                                 ()      = lookup_opt "normalize_pure_terms_for_extraction" as_bool
 let get_odir                    ()      = lookup_opt "odir"                     (as_option as_string)
@@ -705,6 +707,11 @@ let rec specs_with_types () : list<(char * string * opt_type * string)> =
         "Suppress location information in the generated OCaml output (only relevant with --codegen OCaml)");
 
        ( noshort,
+        "no_smt",
+        Const (mk_bool true),
+        "Do not send any queries to the SMT solver, and fail on them instead");
+
+       ( noshort,
         "normalize_pure_terms_for_extraction",
         Const (mk_bool true),
         "Extract top-level pure terms after normalizing them. This can lead to very large code, but can result in more partial evaluation and compile-time specialization.");
@@ -1000,6 +1007,7 @@ let settable = function
     | "max_fuel"
     | "max_ifuel"
     | "min_fuel"
+    | "no_smt"
     | "__no_positivity"
     | "ugly"
     | "print_bound_var_types"
@@ -1212,6 +1220,7 @@ let codegen                      () =
             | _ -> failwith "Impossible")
 let codegen_libs                 () = get_codegen_lib () |> List.map (fun x -> Util.split x ".")
 let debug_any                    () = get_debug () <> []
+let debug_module        modul       = (get_debug () |> List.contains modul)
 let debug_at_level      modul level = (get_debug () |> List.contains modul) && debug_level_geq level
 let defensive                    () = get_defensive () <> "no"
 let defensive_fail               () = get_defensive () = "fail"
@@ -1250,6 +1259,7 @@ let no_extract                   s  = let s = String.lowercase s in
 let normalize_pure_terms_for_extraction
                                  () = get_normalize_pure_terms_for_extraction ()
 let no_location_info             () = get_no_location_info            ()
+let no_smt                       () = get_no_smt                      ()
 let output_dir                   () = get_odir                        ()
 let ugly                         () = get_ugly                        ()
 let print_bound_var_types        () = get_print_bound_var_types       ()

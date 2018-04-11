@@ -23,6 +23,7 @@ type token =
   | TOTAL
   | TILDE of (string)
   | THEN
+  | SYNTH
   | SUB_EFFECT
   | SUBTYPE
   | SUBKIND
@@ -139,6 +140,8 @@ type token =
   | BAR_RBRACK
   | BAR
   | BANG_LBRACE
+  | BACKTICK_HASH
+  | BACKTICK_AT
   | BACKTICK
   | ATTRIBUTES
   | ASSUME
@@ -168,6 +171,7 @@ type tokenId =
     | TOKEN_TOTAL
     | TOKEN_TILDE
     | TOKEN_THEN
+    | TOKEN_SYNTH
     | TOKEN_SUB_EFFECT
     | TOKEN_SUBTYPE
     | TOKEN_SUBKIND
@@ -284,6 +288,8 @@ type tokenId =
     | TOKEN_BAR_RBRACK
     | TOKEN_BAR
     | TOKEN_BANG_LBRACE
+    | TOKEN_BACKTICK_HASH
+    | TOKEN_BACKTICK_AT
     | TOKEN_BACKTICK
     | TOKEN_ATTRIBUTES
     | TOKEN_ASSUME
@@ -301,7 +307,9 @@ type nonTerminalId =
     | NONTERM_option___anonymous_1_
     | NONTERM_option___anonymous_2_
     | NONTERM_option___anonymous_5_
-    | NONTERM_option___anonymous_7_
+    | NONTERM_option___anonymous_6_
+    | NONTERM_option___anonymous_8_
+    | NONTERM_option___anonymous_9_
     | NONTERM_option_ascribeKind_
     | NONTERM_option_ascribeTyp_
     | NONTERM_option_fsTypeArgs_
@@ -310,9 +318,10 @@ type nonTerminalId =
     | NONTERM_boption_SQUIGGLY_RARROW_
     | NONTERM_boption___anonymous_0_
     | NONTERM_loption_separated_nonempty_list_COMMA_appTerm__
+    | NONTERM_loption_separated_nonempty_list_SEMICOLON_lidentOrOperator__
     | NONTERM_loption_separated_nonempty_list_SEMICOLON_tuplePattern__
+    | NONTERM_list___anonymous_10_
     | NONTERM_list___anonymous_4_
-    | NONTERM_list___anonymous_8_
     | NONTERM_list_argTerm_
     | NONTERM_list_atomicTerm_
     | NONTERM_list_attr_letbinding_
@@ -339,6 +348,7 @@ type nonTerminalId =
     | NONTERM_separated_nonempty_list_SEMICOLON_appTerm_
     | NONTERM_separated_nonempty_list_SEMICOLON_effectDecl_
     | NONTERM_separated_nonempty_list_SEMICOLON_fieldPattern_
+    | NONTERM_separated_nonempty_list_SEMICOLON_lidentOrOperator_
     | NONTERM_separated_nonempty_list_SEMICOLON_tuplePattern_
     | NONTERM_inputFragment
     | NONTERM_pragma
@@ -444,7 +454,7 @@ type nonTerminalId =
     | NONTERM_right_flexible_list_SEMICOLON_simpleDef_
     | NONTERM_right_flexible_nonempty_list_SEMICOLON_recordFieldDecl_
     | NONTERM_right_flexible_nonempty_list_SEMICOLON_simpleDef_
-    | NONTERM_reverse_left_flexible_list_BAR___anonymous_6_
+    | NONTERM_reverse_left_flexible_list_BAR___anonymous_7_
     | NONTERM_reverse_left_flexible_nonempty_list_BAR_patternBranch_
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int

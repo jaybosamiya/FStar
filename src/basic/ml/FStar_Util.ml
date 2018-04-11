@@ -231,6 +231,12 @@ let set_is_subset_of ((s1, eq):'a set) ((s2, _):'a set) =
 let set_count ((s1, _):'a set) = Z.of_int (BatList.length s1)
 let set_difference ((s1, eq):'a set) ((s2, _):'a set) : 'a set =
   (BatList.filter (fun y -> not (BatList.exists (eq y) s2)) s1, eq)
+let set_symmetric_difference ((s1, eq):'a set) ((s2, _):'a set) : 'a set =
+  set_union (set_difference (s1, eq) (s2, eq))
+            (set_difference (s2, eq) (s1, eq))
+let set_eq ((s1, eq):'a set) ((s2, _):'a set) : bool =
+  set_is_empty (set_symmetric_difference (s1, eq) (s2, eq))
+
 
 type 'value smap = (string, 'value) BatHashtbl.t
 let smap_create (i:Z.t) : 'value smap = BatHashtbl.create (Z.to_int i)
@@ -496,11 +502,6 @@ let find_opt f l =
 (* JP: why so many duplicates? :'( *)
 let sort_with = FStar_List.sortWith
 
-let set_eq (f: 'a -> 'a -> Z.t) (l1: 'a list) (l2: 'a list) =
-  let l1 = sort_with f l1 in
-  let l2 = sort_with f l2 in
-  BatList.for_all2 (fun l1 l2 -> f l1 l2 = Z.zero) l1 l2
-
 let bind_opt opt f =
   match opt with
   | None -> None
@@ -661,6 +662,21 @@ let write_file (fn:string) s =
   let fh = open_file_for_writing fn in
   append_to_file fh s;
   close_file fh
+let copy_file input_name output_name =
+  (* see https://ocaml.github.io/ocamlunix/ocamlunix.html#sec33 *)
+  let open Unix in
+  let buffer_size = 8192 in
+  let buffer = String.create buffer_size in
+  let fd_in = openfile input_name [O_RDONLY] 0 in
+  let fd_out = openfile output_name [O_WRONLY; O_CREAT; O_TRUNC] 0o666 in
+  let rec copy_loop () =
+    match read fd_in buffer 0 buffer_size with
+    |  0 -> ()
+    | r -> ignore (write fd_out buffer 0 r); copy_loop ()
+  in
+  copy_loop ();
+  close fd_in;
+  close fd_out
 let flush_file (fh:file_handle) = flush fh
 let file_get_contents f =
   let ic = open_in_bin f in

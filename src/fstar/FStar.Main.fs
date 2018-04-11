@@ -60,9 +60,10 @@ let report_errors fmods =
   end
 
 (* Extraction to OCaml, F# or Kremlin *)
-let codegen (umods, env) =
+let codegen (umods, env, delta) =
   let opt = Options.codegen () in
   if opt <> None then
+    let env = Universal.apply_delta_env env delta in
     let mllibs = snd <| Util.fold_map Extraction.ML.Modul.extract (Extraction.ML.UEnv.mkContext env) umods in
     let mllibs = List.flatten mllibs in
     let ext = match opt with
@@ -130,7 +131,12 @@ let load_native_tactics () =
         | Some ml ->
             let dir = Util.dirname ml in
             FStar.Tactics.Load.compile_modules dir [ml_module_name m];
-            Util.must (FStar.Options.find_file cmxs)
+            begin match FStar.Options.find_file cmxs with
+            | None ->
+                E.raise_err (E.Fatal_FailToCompileNativeTactic,
+                         Util.format1 "Failed to compile native tactic; compiled object %s not found" cmxs)
+            | Some f -> f
+            end
     in
     let cmxs_files = modules_to_load |> List.map cmxs_file in
     List.iter (fun x -> Util.print1 "cmxs file: %s\n" x) cmxs_files;
@@ -159,8 +165,10 @@ let go _ =
         if Options.dep() <> None  //--dep: Just compute and print the transitive dependency graph; don't verify anything
         then let _, deps = Parser.Dep.collect filenames in
              Parser.Dep.print deps
-        else if Options.use_extracted_interfaces () && List.length filenames > 1 then
-          Errors.raise_error (Errors.Error_TooManyFiles, "Only one command line file is allowed if --use_extracted_interfaces is set") Range.dummyRange
+        else if Options.use_extracted_interfaces () && (not (Options.expose_interfaces ())) && List.length filenames > 1 then
+          Errors.raise_error (Errors.Error_TooManyFiles,
+                              "Only one command line file is allowed if --use_extracted_interfaces is set, found %s" ^ (string_of_int (List.length filenames)))
+                             Range.dummyRange
         else if Options.interactive () then begin
           match filenames with
           | [] ->
@@ -182,10 +190,10 @@ let go _ =
                          reindenting is not known to work yet with this version"
         else if List.length filenames >= 1 then begin //normal batch mode
           let filenames, dep_graph = FStar.Dependencies.find_deps_if_needed filenames in
-          let fmods, env = Universal.batch_mode_tc filenames dep_graph in
+          let fmods, env, delta_env = Universal.batch_mode_tc filenames dep_graph in
           let module_names_and_times = fmods |> List.map (fun (x, t) -> Universal.module_or_interface_name x, t) in
           report_errors module_names_and_times;
-          codegen (fmods |> List.map fst, env);
+          codegen (fmods |> List.map fst, env, delta_env);
           report_errors module_names_and_times; //codegen errors
           finished_message module_names_and_times 0
         end //end normal batch mode
@@ -206,7 +214,7 @@ let main () =
   try
     FStar.Syntax.Syntax.lazy_chooser := Some lazy_chooser;
     FStar.Syntax.Util.tts_f := Some FStar.Syntax.Print.term_to_string;
-    FStar.TypeChecker.Normalize.unembed_binder_knot := Some FStar.Reflection.Embeddings.unembed_binder;
+    FStar.TypeChecker.Normalize.unembed_binder_knot := Some FStar.Reflection.Embeddings.e_binder;
     let _, time = FStar.Util.record_time go in
     if FStar.Options.query_stats()
     then FStar.Util.print2 "TOTAL TIME %s ms: %s\n"

@@ -218,6 +218,11 @@ let set_intersect ((s1, eq):set<'a>) ((s2, _):set<'a>) = List.filter (fun y -> L
 let set_is_subset_of ((s1, eq): set<'a>) ((s2, _):set<'a>) = List.for_all (fun y -> List.exists (eq y) s2) s1
 let set_count ((s1, _):set<'a>) = s1.Length
 let set_difference ((s1, eq):set<'a>) ((s2, _):set<'a>) : set<'a> = List.filter (fun y -> not (List.exists (eq y) s2)) s1, eq
+let set_symmetric_difference ((s1, eq):set<'a>) ((s2, _):set<'a>) : set<'a> =
+    set_union (set_difference (s1, eq) (s2, eq))
+              (set_difference (s2, eq) (s1, eq))
+let set_eq ((s1, eq):set<'a>) ((s2, _):set<'a>) : bool =
+    set_is_empty (set_symmetric_difference (s1, eq) (s2, eq))
 
 
 (* fifo_set is implemented with the same underlying representation as sets         *)
@@ -522,14 +527,6 @@ let try_find_index f l = List.tryFindIndex f l
 
 let sort_with f l = List.sortWith f l
 
-let set_eq f l1 l2 =
-  let eq x y = f x y = 0 in
-  let l1 = sort_with f l1 |> remove_dups eq in
-  let l2 = sort_with f l2 |> remove_dups eq in
-  if List.length l1 <> List.length l2
-  then false
-  else List.forall2 eq l1 l2
-
 let bind_opt opt f =
     match opt with
     | None -> None
@@ -688,6 +685,7 @@ let write_file (fn:string) s =
   let fh = open_file_for_writing fn in
   append_to_file fh s;
   close_file fh
+let copy_file source_fn dest_fn = System.IO.File.Copy(source_fn, dest_fn)
 let flush_file (fh:file_handle) = fh.Flush()
 let file_get_contents f =
   File.ReadAllText f

@@ -5,32 +5,10 @@ open FStar.Reflection.Formula
 open FStar.Tactics.Types
 open FStar.Tactics.Effect
 open FStar.Tactics.Builtins
+open FStar.Tactics.Util
+module L = FStar.List.Tot
 
-(* Tac list functions, no effect polymorphism *)
-val map: ('a -> Tac 'b) -> list 'a -> Tac (list 'b)
-let rec map f x = match x with
-  | [] -> []
-  | a::tl -> f a::map f tl
-
-val fold_left: ('a -> 'b -> Tac 'a) -> 'a -> l:list 'b -> Tac 'a
-let rec fold_left f x l = match l with
-  | [] -> x
-  | hd::tl -> fold_left f (f x hd) tl
-
-val fold_right: ('a -> 'b -> Tac 'b) -> list 'a -> 'b -> Tac 'b
-let rec fold_right f l x = match l with
-  | [] -> x
-  | hd::tl -> f hd (fold_right f tl x)
-
-// TODO: maybe we can increase a counter on each call
-let fresh_bv t = fresh_bv_named "x" t
-
-let fresh_binder_named nm t =
-    mk_binder (fresh_bv_named nm t)
-
-let fresh_binder t =
-    fresh_binder_named "x" t
-
+(** Set the guard policy only locally, without affecting calling code *)
 let with_policy pol (f : unit -> Tac 'a) : Tac 'a =
     let old_pol = get_guard_policy () in
     set_guard_policy pol;
@@ -49,9 +27,52 @@ under some guard [g], adding the guard as a goal. *)
 let exact_guard (t : term) : Tac unit =
     with_policy Goal (fun () -> t_exact false t)
 
-let fresh_uvar o =
+let cur_module () : Tac (list string) =
+    moduleof (cur_env ())
+
+let focus (f : unit -> Tac 'a) : Tac 'a =
+    let res, _ = divide 1 f (fun () -> ()) in
+    res
+
+let rec repeatn (#a:Type) (n : int) (t : unit -> Tac a) : Tac (list a) =
+    if n = 0
+    then []
+    else let x = t () in
+         let xs = repeatn (n - 1) t in
+         x :: xs
+
+let fresh_uvar (o : option typ) : Tac term =
     let e = cur_env () in
     uvar_env e o
+
+let exact_args (qs : list aqualv) (t : term) : Tac unit =
+    focus (fun () ->
+        let n = List.length qs in
+        let uvs = repeatn n (fun () -> fresh_uvar None) in
+        let t' = mk_app t (zip uvs qs) in
+        exact t';
+        iter (fun uv -> if is_uvar uv
+                        then unshelve uv
+                        else ()) (L.rev uvs)
+    )
+
+let exact_n (n : int) (t : term) : Tac unit =
+    exact_args (repeatn n (fun () -> Q_Explicit)) t
+
+let fresh_bv t =
+    (* These bvs are fresh anyway through a separate counter,
+     * but adding the integer allows for more readable code when
+     * generating code *)
+    let i = fresh () in
+    fresh_bv_named ("x" ^ string_of_int i) t
+
+let fresh_binder_named nm t =
+    mk_binder (fresh_bv_named nm t)
+
+let fresh_binder t =
+    (* See comment in fresh_bv *)
+    let i = fresh () in
+    fresh_binder_named ("x" ^ string_of_int i) t
 
 let norm_term (s : list norm_step) (t : term) : Tac term =
     let e = cur_env () in
@@ -69,6 +90,12 @@ let or_else (#a:Type) (t1 : unit -> Tac a) (t2 : unit -> Tac a) : Tac a =
     | Some x -> x
     | None -> t2 ()
 
+let rec first (ts : list (unit -> Tac 'a)) : Tac 'a =
+    match ts with
+    | [] -> fail "no tactics to try"
+    | [t] -> t ()
+    | t::ts -> or_else t (fun () -> first ts)
+
 let rec repeat (#a:Type) (t : unit -> Tac a) : Tac (list a) =
     match trytac t with
     | None -> []
@@ -78,6 +105,7 @@ let repeat1 (#a:Type) (t : unit -> Tac a) : Tac (list a) =
     let x = t () in
     x :: repeat t
 
+
 let discard (tau : unit -> Tac 'a) : unit -> Tac unit =
     fun () -> let _ = tau () in ()
 
@@ -85,17 +113,11 @@ let discard (tau : unit -> Tac 'a) : unit -> Tac unit =
 let rec repeatseq (#a:Type) (t : unit -> Tac a) : Tac unit =
     let _ = trytac (fun () -> (discard t) `seq` (discard (fun () -> repeatseq t))) in ()
 
-private
-let admit1' () : Tac unit =
-    exact (`(magic ()))
-
 let admit1 () : Tac unit =
-    print "Warning: Admitting goal";
-    admit1' ()
+    tadmit ()
 
 let admit_all () : Tac unit =
-    print "Warning: Admitting all goals";
-    let _ = repeat admit1' in
+    let _ = repeat tadmit in
     ()
 
 let skip_guard () : Tac unit =
@@ -117,7 +139,8 @@ private val __cut : (a:Type) -> (b:Type) -> (a -> b) -> a -> b
 private let __cut a b f x = f x
 
 let tcut (t:term) : Tac binder =
-    let tt = pack (Tv_App (`__cut) (t, Q_Explicit)) in
+    let g = cur_goal () in
+    let tt = mk_e_app (`__cut) [t; g] in
     apply tt;
     intro ()
 
@@ -151,7 +174,7 @@ let rec __assumption_aux (bs : binders) : Tac unit =
     | [] ->
         fail "no assumption matches goal"
     | b::bs ->
-        let t = pack (Tv_Var (bv_of_binder b)) in
+        let t = pack_ln (Tv_Var (bv_of_binder b)) in
         or_else (fun () -> exact t) (fun () -> __assumption_aux bs)
 
 let assumption () : Tac unit =
@@ -186,7 +209,7 @@ let rec rewrite_all_context_equalities (bs:binders) : Tac unit =
     | x_t::bs -> begin
         begin match term_as_formula (type_of_binder x_t) with
         | Comp (Eq _) lhs _ ->
-            begin match inspect lhs with
+            begin match inspect_ln lhs with
             | Tv_Var _ -> rewrite x_t
             | _ -> ()
             end
@@ -200,18 +223,12 @@ let rewrite_eqs_from_context () : Tac unit =
 let rewrite_equality (t:term) : Tac unit =
     try_rewrite_equality t (binders_of_env (cur_env ()))
 
-let unfold_point (t:term) : Tac unit =
-    let g : term = cur_goal () in
-    match term_as_formula g with
-    | Comp (Eq _) l r ->
-        if term_eq l t
-        then (norm [delta]; trefl ())
-        else trefl ()
-    | _ ->
-        fail "impossible"
-
 let unfold_def (t:term) : Tac unit =
-    pointwise (fun () -> unfold_point t)
+    match inspect t with
+    | Tv_FVar fv ->
+        let n = String.concat "." (inspect_fv fv) in
+        norm [delta_fully [n]]
+    | _ -> fail "unfold_def: term is not a fv"
 
 let grewrite' (t1 t2 eq : term) : Tac unit =
     let g = cur_goal () in
@@ -224,20 +241,18 @@ let grewrite' (t1 t2 eq : term) : Tac unit =
         fail "impossible"
 
 let mk_squash (t : term) : term =
-    let sq : term = pack (Tv_FVar (pack_fv squash_qn)) in
+    let sq : term = pack_ln (Tv_FVar (pack_fv squash_qn)) in
     mk_e_app sq [t]
 
 let mk_sq_eq (t1 t2 : term) : term =
-    let eq : term = pack (Tv_FVar (pack_fv eq2_qn)) in
+    let eq : term = pack_ln (Tv_FVar (pack_fv eq2_qn)) in
     mk_squash (mk_e_app eq [t1; t2])
 
 let grewrite (t1 t2 : term) : Tac unit =
     let e = tcut (mk_sq_eq t1 t2) in
-    pointwise (fun () -> grewrite' t1 t2 (pack (Tv_Var (bv_of_binder e))))
+    pointwise (fun () -> grewrite' t1 t2 (pack_ln (Tv_Var (bv_of_binder e))))
 
-let focus (f : unit -> Tac 'a) : Tac 'a =
-    let res, _ = divide 1 f idtac in
-    res
+
 
 let rec iseq (ts : list (unit -> Tac unit)) : Tac unit =
     match ts with
@@ -322,3 +337,19 @@ private let conv #x #y eq w = w
 
 let change_sq t1 =
     change (mk_e_app (`squash) [t1])
+
+let finish_by (t : unit -> Tac 'a) : Tac 'a =
+    let x = t () in
+    or_else qed (fun () -> fail "finish_by: not finished");
+    x
+
+let solve_then #a #b (t1 : unit -> Tac a) (t2 : a -> Tac b) : Tac b =
+    dup ();
+    let x = focus (fun () -> finish_by t1) in
+    let y = t2 x in
+    trefl ();
+    y
+
+(* Some syntax utility functions *)
+let bv_to_term (bv : bv) : Tac term = pack (Tv_Var bv)
+let binder_to_term (b : binder) : Tac term = let bv, _ = inspect_binder b in bv_to_term bv
