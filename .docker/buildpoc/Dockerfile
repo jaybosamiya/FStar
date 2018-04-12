@@ -106,3 +106,4 @@ CMD ["/bin/bash", "--login"]
 
 # Kitematic GUI does not seem to honor ENTRYPOINT/CMD above, and instead relies on the SHELL environment variable:
 ENV SHELL "/bin/bash --login"
+
