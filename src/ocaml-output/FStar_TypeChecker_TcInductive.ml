@@ -2785,7 +2785,8 @@ let (mk_discriminator_and_indexed_projectors :
                                let uu____6525 =
                                  FStar_Ident.set_lid_range disc_name p  in
                                FStar_Syntax_Syntax.fvar uu____6525
-                                 FStar_Syntax_Syntax.Delta_equational
+                                 (FStar_Syntax_Syntax.Delta_defined_at_level
+                                    (Prims.parse_int "1"))
                                  FStar_Pervasives_Native.None
                                 in
                              let uu____6526 =
@@ -3064,8 +3065,12 @@ let (mk_discriminator_and_indexed_projectors :
                                 if uu____6933
                                 then
                                   FStar_Syntax_Syntax.Delta_abstract
-                                    FStar_Syntax_Syntax.Delta_equational
-                                else FStar_Syntax_Syntax.Delta_equational  in
+                                    (FStar_Syntax_Syntax.Delta_defined_at_level
+                                       (Prims.parse_int "1"))
+                                else
+                                  FStar_Syntax_Syntax.Delta_defined_at_level
+                                    (Prims.parse_int "1")
+                                 in
                               let imp =
                                 FStar_Syntax_Util.abs binders body
                                   FStar_Pervasives_Native.None
@@ -3156,7 +3161,8 @@ let (mk_discriminator_and_indexed_projectors :
                                                let uu____7042 =
                                                  FStar_Syntax_Syntax.lid_as_fv
                                                    field_name
-                                                   FStar_Syntax_Syntax.Delta_equational
+                                                   (FStar_Syntax_Syntax.Delta_defined_at_level
+                                                      (Prims.parse_int "1"))
                                                    FStar_Pervasives_Native.None
                                                   in
                                                FStar_Syntax_Syntax.fv_to_tm
@@ -3445,9 +3451,11 @@ let (mk_discriminator_and_indexed_projectors :
                                                    if uu____7378
                                                    then
                                                      FStar_Syntax_Syntax.Delta_abstract
-                                                       FStar_Syntax_Syntax.Delta_equational
+                                                       (FStar_Syntax_Syntax.Delta_defined_at_level
+                                                          (Prims.parse_int "1"))
                                                    else
-                                                     FStar_Syntax_Syntax.Delta_equational
+                                                     FStar_Syntax_Syntax.Delta_defined_at_level
+                                                       (Prims.parse_int "1")
                                                     in
                                                  let lbtyp =
                                                    if no_decl

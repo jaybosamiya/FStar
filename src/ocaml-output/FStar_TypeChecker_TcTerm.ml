@@ -5749,7 +5749,8 @@ and (tc_eqn :
                                                          let disc =
                                                            FStar_Syntax_Syntax.fvar
                                                              discriminator
-                                                             FStar_Syntax_Syntax.Delta_equational
+                                                             (FStar_Syntax_Syntax.Delta_defined_at_level
+                                                                (Prims.parse_int "1"))
                                                              FStar_Pervasives_Native.None
                                                             in
                                                          let disc1 =
@@ -5971,7 +5972,8 @@ and (tc_eqn :
                                                                      in
                                                                     FStar_Syntax_Syntax.fvar
                                                                     uu____13892
-                                                                    FStar_Syntax_Syntax.Delta_equational
+                                                                    (FStar_Syntax_Syntax.Delta_defined_at_level
+                                                                    (Prims.parse_int "1"))
                                                                     FStar_Pervasives_Native.None
                                                                      in
                                                                     let uu____13893
