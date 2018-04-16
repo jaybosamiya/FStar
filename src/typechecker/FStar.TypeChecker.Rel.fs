@@ -465,6 +465,7 @@ let find_univ_uvar u s = BU.find_map s (function
 (* <normalization>                                *)
 (* ------------------------------------------------*)
 let whnf env t     = SS.compress (N.normalize [N.Beta; N.Weak; N.HNF] env (U.unmeta t))
+let uwhnf env t    = SS.compress (N.normalize [N.Beta; N.Weak; N.HNF; N.UnfoldUntil Delta_constant] env (U.unmeta t))
 let sn env t       = SS.compress (N.normalize [N.Beta] env t)
 let norm_arg env t = sn env (fst t), snd t
 let sn_binders env (binders:binders) =
@@ -784,6 +785,7 @@ type match_result =
   | MisMatch of option<delta_depth> * option<delta_depth>
   | HeadMatch
   | FullMatch
+  | NoHead
 
 let string_of_option f = function
   | None -> "None"
@@ -796,15 +798,20 @@ let string_of_match_result = function
         ^ string_of_option Print.delta_depth_to_string d2 ^ ")"
     | HeadMatch -> "HeadMatch"
     | FullMatch -> "FullMatch"
+    | NoHead    -> "NoHead"
 
 let head_match = function
+    | NoHead -> NoHead
     | MisMatch(i, j) -> MisMatch(i, j)
     | _ -> HeadMatch
 
+// GM: This is unused, maybe delete
 let and_match m1 m2 =
     match m1 with
+    | NoHead -> NoHead
     | MisMatch (i, j) -> MisMatch (i, j)
     | HeadMatch -> begin match m2 () with
+                   | NoHead -> NoHead
                    | MisMatch (i,j) -> MisMatch (i, j)
                    | _ -> HeadMatch
                    end
@@ -870,9 +877,14 @@ let rec head_matches env t1 t2 : match_result =
     | Tm_app(head, _), _ -> head_matches env head t2 |> head_match
     | _, Tm_app(head, _) -> head_matches env t1 head |> head_match
 
+    | Tm_match _, _
+    | _, Tm_match _
+    | Tm_let _, _
+    | _, Tm_let _ -> NoHead
+
     | _ -> MisMatch(delta_depth_of_term env t1, delta_depth_of_term env t2)
 
-(* Does t1 match t2, after some delta steps? *)
+(* Does t1 head-match t2, after some delta steps? *)
 let head_matches_delta env wl t1 t2 : (match_result * option<(typ*typ)>) =
     let maybe_inline t =
         let head, _ = U.head_and_args t in
@@ -887,7 +899,14 @@ let head_matches_delta env wl t1 t2 : (match_result * option<(typ*typ)>) =
     let fail r = (r, None) in
     let rec aux retry n_delta t1 t2 =
         let r = head_matches env t1 t2 in
+        if Env.debug env <| Options.Other "RelDelta" then
+            BU.print3 "head_matches (%s, %s) = %s\n"
+                (Print.term_to_string t1)
+                (Print.term_to_string t2)
+                (string_of_match_result r);
         match r with
+            | NoHead -> fail r
+
             | MisMatch(Some Delta_equational, _)
             | MisMatch(_, Some Delta_equational) ->
               if not retry then fail r
@@ -923,7 +942,7 @@ let head_matches_delta env wl t1 t2 : (match_result * option<(typ*typ)>) =
             | _ -> success n_delta r t1 t2 in
     let r = aux true 0 t1 t2 in
     if Env.debug env <| Options.Other "RelDelta" then
-        BU.print3 "head_matches (%s, %s) = %s\n"
+        BU.print3 "head_matches_delta (%s, %s) = %s\n"
             (Print.term_to_string t1)
             (Print.term_to_string t2)
             (string_of_match_result (fst r));
@@ -952,6 +971,7 @@ let rec decompose (env:env) (t:term)
     =
     let t = U.unmeta t in
     let matches t' = match head_matches env t t' with
+        | NoHead
         | MisMatch _ -> false
         | _ -> true in
     match t.n with
@@ -1415,6 +1435,7 @@ and solve_rigid_flex_meet (env:Env.env) (tp:tprob) (wl:worklist) : option<workli
     let rec disjoin t1 t2 : option<(term * list<prob>)> =
         let mr, ts = head_matches_delta env () t1 t2 in
         match mr with
+            | NoHead
             | MisMatch _ ->
               None
 
@@ -1684,6 +1705,12 @@ and solve_t' (env:Env.env) (problem:tprob) (wl:worklist) : solution =
         : solution =
         let m, o = head_matches_delta env wl t1 t2 in
         match m, o  with
+            | (NoHead, Some _) ->
+                let t1 = uwhnf env t1 in
+                let t2 = uwhnf env t2 in
+                solve_t env ({problem with lhs=t1; rhs=t2}) wl
+
+            | (NoHead, None)
             | (MisMatch _, _) -> //heads definitely do not match
                 let rec may_relate head =
                     match (SS.compress head).n with
